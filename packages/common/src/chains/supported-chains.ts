@@ -12,10 +12,10 @@ export const polkadotChain = createChain({
   id: "polkadot",
   name: "Polkadot",
   specName: "polkadot",
-  wsUrls: ["wss://polkadot-rpc.dwellir.com"],
+  wsUrls: ["wss://polkadot-rpc.n.dwellir.com"],
   relay: "polkadot",
   type: "relay",
-  chainId: null,
+  chainId: 0,
   blockExplorerUrl: "https://polkadot.subscan.io",
   prefix: 0,
   decimals: 10,
@@ -24,7 +24,7 @@ export const polkadotChain = createChain({
 
 export const polkadotAssetHubChain = createChain({
   id: "polkadot_asset_hub",
-  name: "Polkadot Asset Hub",
+  name: "AssetHubPolkadot",
   specName: "asset-hub-polkadot",
   wsUrls: ["wss://polkadot-asset-hub-rpc.polkadot.io/"],
   relay: "polkadot",
@@ -43,7 +43,7 @@ export const westendChain = createChain({
   wsUrls: ["wss://westend-rpc.polkadot.io"],
   relay: "west",
   type: "relay",
-  chainId: null,
+  chainId: 0,
   blockExplorerUrl: "https://westend.subscan.io",
   xcmExtrinsic: "limited_teleport_assets",
   prefix: 42, // default
@@ -53,7 +53,7 @@ export const westendChain = createChain({
 
 export const westendAssetHubChain = createChain({
   id: "west_asset_hub",
-  name: "Westend Asset Hub",
+  name: "AssetHubWestend",
   specName: "asset-hub-westend",
   wsUrls: ["wss://westend-asset-hub-rpc.polkadot.io"],
   relay: "west",

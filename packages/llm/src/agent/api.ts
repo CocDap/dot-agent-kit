@@ -1,8 +1,8 @@
 import type { PolkadotApi } from "@polkadot-agent-kit/core"
+import type { PolkadotSigner } from "polkadot-api"
 
-import { checkBalanceTool, transferNativeTool } from "../langchain"
-import type { BalanceTool, TransferTool } from "../types"
-
+import { checkBalanceTool, transferNativeTool, xcmTransferNativeTool } from "../langchain"
+import type { BalanceTool, TransferTool, XcmTransferNativeAssetTool } from "../types"
 /**
  * Interface for Polkadot API implementations
  * Defines the interface that all Polkadot chain types must follow
@@ -19,7 +19,13 @@ export interface IPolkadotAgentApi {
    * Returns a tool that transfers native tokens to a specific address
    * @returns A dynamic structured tool that transfers native tokens to the specified address
    */
-  transferNativeTool(): TransferTool
+  transferNativeTool(signer: PolkadotSigner): TransferTool
+
+  // /**
+  //  * Returns a tool that transfers native tokens to a specific address via xcm
+  //  * @returns A dynamic structured tool that transfers native tokens to the specified address via xcm
+  //  */
+  xcmTransferNativeTool(signer: PolkadotSigner, sender: string): XcmTransferNativeAssetTool
 }
 
 /**
@@ -40,7 +46,11 @@ export class PolkadotAgentApi implements IPolkadotAgentApi {
     return checkBalanceTool(this.api.getAllApis(), address) as BalanceTool
   }
 
-  transferNativeTool(): TransferTool {
-    return transferNativeTool(this.api.getAllApis()) as TransferTool
+  transferNativeTool(signer: PolkadotSigner): TransferTool {
+    return transferNativeTool(this.api.getAllApis(), signer) as TransferTool
+  }
+
+  xcmTransferNativeTool(signer: PolkadotSigner, sender: string): XcmTransferNativeAssetTool {
+    return xcmTransferNativeTool(signer, sender) as XcmTransferNativeAssetTool
   }
 }
