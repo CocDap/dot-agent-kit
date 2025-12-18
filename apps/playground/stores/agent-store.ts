@@ -156,14 +156,15 @@ export const useAgentStore = create<AgentState>()(
 
         try {
           const { PolkadotAgentKit } = await import("@polkadot-agent-kit/sdk")
-          
+          console.log('config', config)
           const agentKit = new PolkadotAgentKit({
             privateKey: config.privateKey,
             keyType: config.keyType,
             chains: config.chains as any,
           })
-
+          console.log('agentKit', agentKit)
           await agentKit.initializeApi()
+          console.log('agentKit initialized')
 
           // Set session expiry to 15 minutes from now
           const sessionExpiry = Date.now() + (15 * 60 * 1000) // 15 minutes
