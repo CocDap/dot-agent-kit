@@ -119,15 +119,16 @@ export const useAgentStore = create<AgentState>()(
 
           try {
             set({ isInitializing: true })
-
+            console.log('config', config)
             const { PolkadotAgentKit } = await import("@polkadot-agent-kit/sdk")
+
 
             const agentKit = new PolkadotAgentKit({
               privateKey: config.privateKey,
               keyType: config.keyType,
               chains: config.chains as any,
             })
-
+            console.log('agentKit', agentKit)
             await agentKit.initializeApi()
 
             set({
