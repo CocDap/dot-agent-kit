@@ -1,5 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  transpilePackages: [
+    "@polkadot-agent-kit/sdk",
+    "@polkadot-agent-kit/common",
+    "@polkadot-agent-kit/core",
+    "@polkadot-agent-kit/llm"
+  ],
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -9,23 +15,33 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  webpack: (config) => {
+  webpack: (config, { isServer }) => {
     config.experiments = {
       ...config.experiments,
       asyncWebAssembly: true,
-      layers: true,
     };
+
+    // Correctly handle WASM in both server and client
     config.module.rules.push({
       test: /\.wasm$/,
       type: "webassembly/async",
     });
-    config.output = {
-      ...config.output,
-      environment: {
-        ...config.output?.environment,
+
+    if (!isServer) {
+      config.output.environment = {
+        ...config.output.environment,
         asyncFunction: true,
-      },
-    };
+      };
+      // Polyfill Node.js built-ins for client-side
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        path: false,
+        os: false,
+        crypto: false,
+      };
+    }
+
     return config;
   },
 }
