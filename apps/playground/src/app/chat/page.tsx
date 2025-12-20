@@ -5,7 +5,7 @@ import { Textarea } from "../../components/ui/textarea"
 import { Badge } from "../../components/ui/badge"
 import { Bot } from "lucide-react"
 import Sidebar from "../../components/sidebar"
-import { useAgentStore, useAgentRestore, useIsInitialized } from "../../stores/agent-store"
+import { useAgent, useAgentRestore, useIsInitialized } from "../../contexts/AgentContext"
 import { SystemMessage, HumanMessage, ToolMessage } from "@langchain/core/messages"
 import React from "react"
 interface ChatMessage {
@@ -26,7 +26,7 @@ interface AgentConfig {
 }
 
 export default function ChatPage() {
-  const { agentKit, config } = useAgentStore()
+  const { agentKit, config } = useAgent()
   const isInitialized = useIsInitialized()
   const [chatInput, setChatInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
@@ -113,10 +113,10 @@ export default function ChatPage() {
 
       if (aiResponse.tool_calls && aiResponse.tool_calls.length > 0) {
 
-  
+
         // Execute all tools and collect results
         const toolMessages: ToolMessage[] = []
-        
+
         for (const toolCall of aiResponse.tool_calls) {
           const selectedTool = tools.find((t) => t.name === toolCall.name)
           if (selectedTool) {
@@ -124,7 +124,7 @@ export default function ChatPage() {
               console.log(`Executing tool ${toolCall.name} with args:`, toolCall.args)
               const toolResult = await selectedTool.invoke(toolCall.args)
               console.log(`Tool result (${toolCall.name}):`, toolResult)
-              
+
               // Create a ToolMessage with the result
               toolMessages.push(
                 new ToolMessage({
@@ -150,21 +150,21 @@ export default function ChatPage() {
             )
           }
         }
-        
+
         const messagesWithToolResults = [
           ...messages,
           aiResponse,
           ...toolMessages,
         ]
-        
+
         const finalResponse = await chatModel.invoke(messagesWithToolResults)
-        
-        outputText = typeof finalResponse.content === "string" 
-          ? finalResponse.content 
+
+        outputText = typeof finalResponse.content === "string"
+          ? finalResponse.content
           : JSON.stringify(finalResponse.content, null, 2)
       } else {
-        outputText = typeof aiResponse.content === "string" 
-          ? aiResponse.content 
+        outputText = typeof aiResponse.content === "string"
+          ? aiResponse.content
           : JSON.stringify(aiResponse.content, null, 2)
       }
 
@@ -240,8 +240,8 @@ export default function ChatPage() {
                   <div key={message.id} className={`flex ${message.type === "user" ? "justify-end" : "justify-start"}`}>
                     <div
                       className={`max-w-[90%] sm:max-w-[85%] rounded-xl sm:rounded-2xl p-3 sm:p-5 ${message.type === "user"
-                          ? "bg-blue-600/20 border border-blue-500/30 ml-4 sm:ml-12"
-                          : "modern-card mr-4 sm:mr-12"
+                        ? "bg-blue-600/20 border border-blue-500/30 ml-4 sm:ml-12"
+                        : "modern-card mr-4 sm:mr-12"
                         }`}
                     >
                       <div className="flex items-start gap-2 sm:gap-4">

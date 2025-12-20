@@ -3,7 +3,9 @@ import type { Metadata } from "next"
 import "./globals.css"
 import Script from "next/script"
 import { Toaster } from "../components/ui/toaster"
+import { AgentProvider } from "../contexts/AgentContext"
 import React from "react"
+
 export const metadata: Metadata = {
   title: "Polkadot Agent Playground",
   description: "Interactive environment for exploring Polkadot Agent Kit on-chain capabilities",
@@ -29,8 +31,10 @@ export default function RootLayout({
         {/* rest of your scripts go under */}
       </head>
       <body className="antialiased">
-        {children}
-        <Toaster />
+        <AgentProvider>
+          {children}
+          <Toaster />
+        </AgentProvider>
       </body>
     </html>
   )

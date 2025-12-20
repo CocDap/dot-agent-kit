@@ -11,7 +11,7 @@ import { Badge } from "../../components/ui/badge"
 import { Key, Cpu, Loader2, Check, ArrowLeft, ArrowRight, Link } from "lucide-react"
 import Sidebar from "../../components/sidebar"
 import { ChainSelector } from "../../components/chain-selector"
-import { useAgentStore, useIsInitialized } from "../../stores/agent-store"
+import { useAgent, useIsInitialized } from "../../contexts/AgentContext"
 import { useToast } from "../../hooks/use-toast"
 import type { KeyType } from "@polkadot-agent-kit/common"
 import React from "react"
@@ -45,8 +45,9 @@ export default function ConfigPage() {
     setConfig,
     initializeAgent,
     setInitializing
-  } = useAgentStore()
+  } = useAgent()
   const isInitialized = useIsInitialized()
+
 
   const [currentStep, setCurrentStep] = useState(1)
   const [agentConfig, setAgentConfig] = useState<AgentConfig>({
@@ -371,26 +372,24 @@ export default function ConfigPage() {
 
       // If Polkadot config changed, update store and (re)initialize agent
       // Also re-initialize if only LLM changed but agent is not ready
+      const storeConfig = {
+        privateKey: agentConfig.privateKey,
+        keyType: agentConfig.keyType as "Sr25519" | "Ed25519",
+        chains: agentConfig.chains,
+        isConfigured: true
+      }
+
+      // Always update the config in context
+      try {
+        setConfig(storeConfig)
+      } catch (error) {
+        console.error('[ConfigPage] Error calling setConfig:', error)
+      }
+
+      // Always initialize if not yet initialized, or if config changed
       if (polkadotChanged || !isInitialized || llmChanged) {
-        const storeConfig = {
-          privateKey: agentConfig.privateKey,
-          keyType: agentConfig.keyType as "Sr25519" | "Ed25519",
-          chains: agentConfig.chains,
-          isConfigured: true
-        }
-
-        // Only update store if config actually changed
-        if (polkadotChanged) {
-          try {
-            setConfig(storeConfig)
-          } catch (error) {
-            console.error('[ConfigPage] Error calling setConfig:', error)
-          }
-        }
-
-        // Re-initialize agent to ensure it picks up any environment/config changes
-        // that might affect tool execution or API connections
-        await initializeAgent()
+        // Pass storeConfig directly to avoid waiting for state update
+        await initializeAgent(storeConfig)
       }
 
       const updatedConfig = { ...agentConfig, isConfigured: true }
@@ -484,10 +483,10 @@ export default function ConfigPage() {
                   <div className="flex flex-col items-center flex-1">
                     <div
                       className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ${getStepStatus(1) === "completed"
+                        ? "bg-blue-500"
+                        : getStepStatus(1) === "active"
                           ? "bg-blue-500"
-                          : getStepStatus(1) === "active"
-                            ? "bg-blue-500"
-                            : "bg-white/10"
+                          : "bg-white/10"
                         }`}
                     >
                       {getStepStatus(1) === "completed" ? (
@@ -510,10 +509,10 @@ export default function ConfigPage() {
                   <div className="flex flex-col items-center flex-1">
                     <div
                       className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ${getStepStatus(2) === "completed"
+                        ? "bg-blue-500"
+                        : getStepStatus(2) === "active"
                           ? "bg-blue-500"
-                          : getStepStatus(2) === "active"
-                            ? "bg-blue-500"
-                            : "bg-white/10"
+                          : "bg-white/10"
                         }`}
                     >
                       {getStepStatus(2) === "completed" ? (
@@ -536,10 +535,10 @@ export default function ConfigPage() {
                   <div className="flex flex-col items-center flex-1">
                     <div
                       className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ${getStepStatus(3) === "completed"
+                        ? "bg-blue-500"
+                        : getStepStatus(3) === "active"
                           ? "bg-blue-500"
-                          : getStepStatus(3) === "active"
-                            ? "bg-blue-500"
-                            : "bg-white/10"
+                          : "bg-white/10"
                         }`}
                     >
                       {getStepStatus(3) === "completed" ? (

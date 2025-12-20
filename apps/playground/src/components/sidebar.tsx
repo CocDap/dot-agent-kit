@@ -4,8 +4,8 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "./ui/button"
 import { MessageCircle, Code2, Terminal, ChevronLeft, ChevronRight, Settings } from "lucide-react"
-import { useAgentStore, useIsInitialized } from "../stores/agent-store"
 import React from "react"
+import { useIsInitialized } from "../contexts/AgentContext"
 interface SidebarProps {
   currentPage: "config" | "chat" | "developer"
 }
